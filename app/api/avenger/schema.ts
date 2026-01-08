@@ -1,10 +1,10 @@
 import { z } from 'zod'
 
-export const KillerRequestSchema = z.object({
+export const RealmAvengerRequestSchema = z.object({
     apiKey: z.string().min(1),
 })
 
-export const KillerResponseSchema = z.object({
+export const RealmAvengerResponseSchema = z.object({
     id: z.number(),
     current: z.number(),
     max: z.number(),

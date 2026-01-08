@@ -1,7 +1,7 @@
 // import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { ApiGateway } from './components/ApiGateway'
-import { AvengerTracking } from './components/AvengerTracking'
+import { RealmAvengerTracking } from './components/RealmAvengerTracking'
 
 export default function Home() {
     return (
@@ -9,7 +9,7 @@ export default function Home() {
             <Header />
             <main className="flex flex-col gap-10 w-full justify-center items-center">
                 <ApiGateway />
-                <AvengerTracking />
+                <RealmAvengerTracking />
             </main>
             {/* <Footer /> */}
         </div>

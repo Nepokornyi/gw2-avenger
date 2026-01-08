@@ -1,14 +1,14 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { z } from 'zod'
-import { KillerResponseSchema } from '../api/killer/schema'
+import { RealmAvengerResponseSchema } from '../api/avenger/schema'
 
-type AvengerStats = z.infer<typeof KillerResponseSchema>
+type RealmAvengerStats = z.infer<typeof RealmAvengerResponseSchema>
 
-export const AvengerTracking = () => {
+export const RealmAvengerTracking = () => {
     const [ready, setReady] = useState(false)
     const [APIKey, setAPIKey] = useState<string | null>(null)
-    const [avengerStats, setAvengerStats] = useState<AvengerStats | null>(null)
+    const [killStats, setKillStats] = useState<RealmAvengerStats | null>(null)
 
     const [sessionStart, setSessionStart] = useState<number | null>(null)
     const [elapsedTime, setElapsedTime] = useState(0)
@@ -36,7 +36,7 @@ export const AvengerTracking = () => {
 
         const interval = setInterval(async () => {
             try {
-                const res = await fetch('/api/killer', {
+                const res = await fetch('/api/avenger', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ apiKey: APIKey }),
@@ -45,7 +45,7 @@ export const AvengerTracking = () => {
                 if (!res.ok) throw new Error('Polling failed')
 
                 const { avenger } = await res.json()
-                setAvengerStats(avenger)
+                setKillStats(avenger)
             } catch (err) {
                 console.error('Polling error:', err)
             }
@@ -56,7 +56,7 @@ export const AvengerTracking = () => {
 
     const handleStartKilling = async () => {
         try {
-            const res = await fetch('/api/killer', {
+            const res = await fetch('/api/avenger', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ apiKey: APIKey }),
@@ -65,7 +65,7 @@ export const AvengerTracking = () => {
             if (!res.ok) throw new Error('Invalid key')
 
             const { avenger } = await res.json()
-            setAvengerStats(avenger)
+            setKillStats(avenger)
 
             setSessionStart(Date.now())
             setInitialKills(avenger.current)
@@ -88,19 +88,18 @@ export const AvengerTracking = () => {
                 </button>
             )}
 
-            {avengerStats && (
+            {killStats && (
                 <div className="flex gap-5">
-                    <span>Achievement id: {avengerStats.id}</span>
-                    <span>Max kills: {avengerStats.max}</span>
+                    <span>Max kills: {killStats.max}</span>
                     <span className="font-bold">
-                        Current kills: {avengerStats.current}
+                        Current kills: {killStats.current}
                     </span>
                 </div>
             )}
 
-            {initialKills !== null && avengerStats && (
+            {initialKills !== null && killStats && (
                 <div>
-                    Kills this session: {avengerStats.current - initialKills}
+                    Kills this session: {killStats.current - initialKills}
                 </div>
             )}
 

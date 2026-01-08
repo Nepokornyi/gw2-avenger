@@ -1,8 +1,8 @@
-import { KillerRequestSchema, KillerResponseSchema } from './schema'
+import { RealmAvengerRequestSchema, RealmAvengerResponseSchema } from './schema'
 
 export async function POST(req: Request) {
     try {
-        const body = KillerRequestSchema.parse(await req.json())
+        const body = RealmAvengerRequestSchema.parse(await req.json())
 
         const res = await fetch(
             'https://api.guildwars2.com/v2/account/achievements?id=283',
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
             })
 
         const data = await res.json()
-        const avenger = KillerResponseSchema.parse(data)
+        const avenger = RealmAvengerResponseSchema.parse(data)
 
         return Response.json({ avenger })
     } catch (err) {
