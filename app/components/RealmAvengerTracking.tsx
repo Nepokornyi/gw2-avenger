@@ -2,24 +2,18 @@
 import { useEffect, useState } from 'react'
 import { z } from 'zod'
 import { RealmAvengerResponseSchema } from '../api/avenger/schema'
+import { useApiKey } from '@/context/ApiKeyContext'
 
 type RealmAvengerStats = z.infer<typeof RealmAvengerResponseSchema>
 
 export const RealmAvengerTracking = () => {
-    const [ready, setReady] = useState(false)
-    const [APIKey, setAPIKey] = useState<string | null>(null)
+    const { apiKey, ready } = useApiKey()
     const [killStats, setKillStats] = useState<RealmAvengerStats | null>(null)
 
     const [sessionStart, setSessionStart] = useState<number | null>(null)
     const [elapsedTime, setElapsedTime] = useState(0)
-
     const [initialKills, setInitialKills] = useState<number | null>(null)
     const [pollingActive, setPollingActive] = useState(false)
-
-    useEffect(() => {
-        setAPIKey(localStorage.getItem('gw2_api_key'))
-        setReady(true)
-    }, [])
 
     useEffect(() => {
         if (!sessionStart) return
@@ -32,14 +26,14 @@ export const RealmAvengerTracking = () => {
     }, [sessionStart])
 
     useEffect(() => {
-        if (!pollingActive && !APIKey) return
+        if (!pollingActive && !apiKey) return
 
         const interval = setInterval(async () => {
             try {
                 const res = await fetch('/api/avenger', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ apiKey: APIKey }),
+                    body: JSON.stringify({ apiKey: apiKey }),
                 })
 
                 if (!res.ok) throw new Error('Polling failed')
@@ -52,23 +46,25 @@ export const RealmAvengerTracking = () => {
         }, 180000)
 
         return () => clearInterval(interval)
-    }, [pollingActive, APIKey])
+    }, [pollingActive, apiKey])
 
-    const handleStartKilling = async () => {
+    const handleStart = async () => {
+        if (!apiKey) return
+
         try {
             const res = await fetch('/api/avenger', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ apiKey: APIKey }),
+                body: JSON.stringify({ apiKey: apiKey }),
             })
 
-            if (!res.ok) throw new Error('Invalid key')
+            if (!res.ok) throw new Error('API unavailable')
 
             const { avenger } = await res.json()
-            setKillStats(avenger)
 
-            setSessionStart(Date.now())
+            setKillStats(avenger)
             setInitialKills(avenger.current)
+            setSessionStart(Date.now())
             setPollingActive(true)
         } catch (err) {
             console.error('Request failed', err)
@@ -82,7 +78,7 @@ export const RealmAvengerTracking = () => {
             {!sessionStart && (
                 <button
                     className="p-2 text-black bg-white cursor-pointer"
-                    onClick={handleStartKilling}
+                    onClick={handleStart}
                 >
                     Start Killing
                 </button>
