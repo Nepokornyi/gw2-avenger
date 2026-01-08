@@ -71,7 +71,7 @@ export const RealmAvengerTracking = () => {
         }
     }
 
-    if (!ready) return null
+    if (!ready || !apiKey) return null
 
     return (
         <div className="flex flex-col items-center gap-2.5">
