@@ -73,33 +73,127 @@ export const RealmAvengerTracking = () => {
 
     if (!ready || !apiKey) return null
 
+    const formatTime = (seconds: number) => {
+        const h = Math.floor(seconds / 3600)
+            .toString()
+            .padStart(2, '0')
+        const m = Math.floor((seconds % 3600) / 60)
+            .toString()
+            .padStart(2, '0')
+        const s = (seconds % 60).toString().padStart(2, '0')
+        return `${h}:${m}:${s}`
+    }
+
+    const sessionKills =
+        initialKills !== null && killStats
+            ? killStats.current - initialKills
+            : 0
+
+    const progress = killStats
+        ? Math.min((killStats.current / killStats.max) * 100, 100)
+        : 0
+
     return (
-        <div className="flex flex-col items-center gap-2.5">
-            {!sessionStart && (
-                <button
-                    className="p-2 text-black bg-white cursor-pointer"
-                    onClick={handleStart}
-                >
-                    Start Killing
-                </button>
-            )}
+        <div className="animate-fade-in stagger-1 border border-border bg-bg-surface relative overflow-hidden">
+            {/* Top accent line */}
+            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gold-dim to-transparent" />
 
-            {killStats && (
-                <div className="flex gap-5">
-                    <span>Max kills: {killStats.max}</span>
-                    <span className="font-bold">
-                        Current kills: {killStats.current}
-                    </span>
+            <div className="p-8">
+                <div className="flex items-center justify-between mb-6">
+                    <div>
+                        <div className="flex items-center gap-3 mb-1">
+                            <div className="w-1.5 h-1.5 bg-red" />
+                            <h2 className="text-text font-medium tracking-wide uppercase text-sm">
+                                Realm Avenger
+                            </h2>
+                        </div>
+                        <p className="text-text-dim text-xs ml-4 uppercase tracking-widest">
+                            Achievement #283 — Player Kills
+                        </p>
+                    </div>
+
+                    {sessionStart && (
+                        <div className="animate-fade-in text-right">
+                            <div className="text-text-dim text-[10px] uppercase tracking-widest mb-0.5">
+                                Session
+                            </div>
+                            <div className="text-text font-mono text-lg tracking-wider">
+                                {formatTime(elapsedTime)}
+                            </div>
+                        </div>
+                    )}
                 </div>
-            )}
 
-            {initialKills !== null && killStats && (
-                <div>
-                    Kills this session: {killStats.current - initialKills}
-                </div>
-            )}
+                {!sessionStart && (
+                    <button
+                        className="group relative bg-transparent border border-red/40 text-red-light text-sm font-medium tracking-wider uppercase px-6 py-2.5 cursor-pointer transition-all duration-300 hover:border-red hover:text-text hover:shadow-[0_0_20px_rgba(170,32,32,0.15)]"
+                        onClick={handleStart}
+                    >
+                        <span className="relative z-10">Start Session</span>
+                        <div className="absolute inset-0 bg-red/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </button>
+                )}
 
-            {sessionStart && <div>Session time: {elapsedTime}s</div>}
+                {killStats && (
+                    <div className="flex flex-col gap-5 animate-fade-in">
+                        {/* Progress section */}
+                        <div>
+                            <div className="flex justify-between text-xs uppercase tracking-widest mb-2">
+                                <span className="text-text-muted">
+                                    Progress
+                                </span>
+                                <span className="text-text-muted">
+                                    <span className="text-text font-medium">
+                                        {killStats.current.toLocaleString()}
+                                    </span>
+                                    <span className="text-text-dim mx-1">
+                                        /
+                                    </span>
+                                    {killStats.max.toLocaleString()}
+                                </span>
+                            </div>
+                            <div className="h-1 bg-bg-base overflow-hidden">
+                                <div
+                                    className="h-full bg-gradient-to-r from-gold-dim to-gold animate-progress-fill transition-all duration-1000"
+                                    style={{ width: `${progress}%` }}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Session stats */}
+                        {sessionStart && (
+                            <div className="grid grid-cols-3 gap-px bg-border">
+                                <div className="bg-bg-surface px-4 py-4 animate-fade-in stagger-1">
+                                    <div className="text-text-dim text-[10px] uppercase tracking-widest mb-1">
+                                        Session Kills
+                                    </div>
+                                    <div className="text-gold text-2xl font-semibold tabular-nums">
+                                        {sessionKills}
+                                    </div>
+                                </div>
+                                <div className="bg-bg-surface px-4 py-4 animate-fade-in stagger-2">
+                                    <div className="text-text-dim text-[10px] uppercase tracking-widest mb-1">
+                                        Total Kills
+                                    </div>
+                                    <div className="text-text text-2xl font-semibold tabular-nums">
+                                        {killStats.current.toLocaleString()}
+                                    </div>
+                                </div>
+                                <div className="bg-bg-surface px-4 py-4 animate-fade-in stagger-3">
+                                    <div className="text-text-dim text-[10px] uppercase tracking-widest mb-1">
+                                        Remaining
+                                    </div>
+                                    <div className="text-text-muted text-2xl font-semibold tabular-nums">
+                                        {(
+                                            killStats.max - killStats.current
+                                        ).toLocaleString()}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     )
 }

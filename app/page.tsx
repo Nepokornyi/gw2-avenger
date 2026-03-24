@@ -5,24 +5,13 @@ import { RealmAvengerTracking } from './components/RealmAvengerTracking'
 import { ApiKeyProvider } from '@/context/ApiKeyContext'
 
 export default function Home() {
-    const handleCall = async () => {
-        const res = await fetch('/api/db')
-        const data = await res.json()
-        console.log(data)
-    }
     return (
-        <div className="font-sans">
+        <div className="font-sans min-h-screen">
             <ApiKeyProvider>
                 <Header />
-                <main className="flex flex-col gap-10 w-full justify-center items-center">
+                <main className="max-w-5xl mx-auto px-8 py-12 flex flex-col gap-6">
                     <ApiGateway />
                     <RealmAvengerTracking />
-                    <button
-                        className="bg-red-400 px-2 py-1 hover:bg-red-600 cursor-pointer"
-                        onClick={handleCall}
-                    >
-                        call db
-                    </button>
                 </main>
             </ApiKeyProvider>
         </div>
