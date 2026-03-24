@@ -26,7 +26,7 @@ export const RealmAvengerTracking = () => {
     }, [sessionStart])
 
     useEffect(() => {
-        if (!pollingActive && !apiKey) return
+        if (!pollingActive || !apiKey) return
 
         const interval = setInterval(async () => {
             try {
