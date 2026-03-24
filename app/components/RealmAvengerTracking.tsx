@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { z } from 'zod'
 import { RealmAvengerResponseSchema } from '../api/avenger/schema'
 import { useApiKey } from '@/context/ApiKeyContext'
+import { getSession, saveSession, clearSession } from '@/lib/local-storage'
 
 type RealmAvengerStats = z.infer<typeof RealmAvengerResponseSchema>
 
@@ -41,6 +42,11 @@ export const RealmAvengerTracking = () => {
 
                 const { avenger } = await res.json()
                 setKillStats(avenger)
+
+                const stored = getSession()
+                if (stored) {
+                    saveSession({ ...stored, currentKills: avenger.current })
+                }
             } catch (err) {
                 console.error('Polling error:', err)
             }
@@ -48,6 +54,23 @@ export const RealmAvengerTracking = () => {
 
         return () => clearInterval(interval)
     }, [pollingActive, apiKey])
+
+    useEffect(() => {
+        if (!apiKey) return
+
+        const stored = getSession()
+        if (!stored) return
+
+        setSessionStart(stored.startedAt)
+        setInitialKills(stored.initialKills)
+        setKillStats({
+            id: stored.achievementId,
+            current: stored.currentKills,
+            max: stored.maxKills,
+            done: false,
+        })
+        setPollingActive(true)
+    }, [apiKey])
 
     const handleStart = async () => {
         if (!apiKey) return
@@ -64,10 +87,20 @@ export const RealmAvengerTracking = () => {
 
             const { avenger } = await res.json()
 
+            const now = Date.now()
+
             setKillStats(avenger)
             setInitialKills(avenger.current)
-            setSessionStart(Date.now())
+            setSessionStart(now)
             setPollingActive(true)
+
+            saveSession({
+                startedAt: now,
+                initialKills: avenger.current,
+                currentKills: avenger.current,
+                maxKills: avenger.max,
+                achievementId: 283,
+            })
         } catch (err) {
             console.error('Request failed', err)
         } finally {
@@ -81,6 +114,7 @@ export const RealmAvengerTracking = () => {
         setElapsedTime(0)
         setInitialKills(null)
         setKillStats(null)
+        clearSession()
     }
 
     if (!ready || !apiKey) return null

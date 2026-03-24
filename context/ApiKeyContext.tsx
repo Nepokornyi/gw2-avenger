@@ -7,6 +7,11 @@ import {
     useEffect,
     useState,
 } from 'react'
+import {
+    getApiKey as storedGetApiKey,
+    setApiKey as storedSetApiKey,
+    clearApiKey,
+} from '@/lib/local-storage'
 
 type ApiKeyContextValue = {
     apiKey: string | null
@@ -21,16 +26,15 @@ export const ApiKeyProvider = ({ children }: { children: ReactNode }) => {
     const [ready, setReady] = useState(false)
 
     useEffect(() => {
-        const stored = localStorage.getItem('gw2_api_key')
-        setApiKeyState(stored)
+        setApiKeyState(storedGetApiKey())
         setReady(true)
     }, [])
 
     const setApiKey = (key: string | null) => {
         if (key) {
-            localStorage.setItem('gw2_api_key', key)
+            storedSetApiKey(key)
         } else {
-            localStorage.removeItem('gw2_api_key')
+            clearApiKey()
         }
         setApiKeyState(key)
     }
