@@ -14,6 +14,7 @@ export const RealmAvengerTracking = () => {
     const [elapsedTime, setElapsedTime] = useState(0)
     const [initialKills, setInitialKills] = useState<number | null>(null)
     const [pollingActive, setPollingActive] = useState(false)
+    const [pending, setPending] = useState(false)
 
     useEffect(() => {
         if (!sessionStart) return
@@ -50,6 +51,7 @@ export const RealmAvengerTracking = () => {
 
     const handleStart = async () => {
         if (!apiKey) return
+        setPending(true)
 
         try {
             const res = await fetch('/api/avenger', {
@@ -68,7 +70,17 @@ export const RealmAvengerTracking = () => {
             setPollingActive(true)
         } catch (err) {
             console.error('Request failed', err)
+        } finally {
+            setPending(false)
         }
+    }
+
+    const handleStop = () => {
+        setPollingActive(false)
+        setSessionStart(null)
+        setElapsedTime(0)
+        setInitialKills(null)
+        setKillStats(null)
     }
 
     if (!ready || !apiKey) return null
@@ -113,23 +125,38 @@ export const RealmAvengerTracking = () => {
                     </div>
 
                     {sessionStart && (
-                        <div className="animate-fade-in text-right">
-                            <div className="text-text-dim text-[10px] uppercase tracking-widest mb-0.5">
-                                Session
+                        <div className="animate-fade-in flex items-center gap-4">
+                            <div className="text-right">
+                                <div className="text-text-dim text-[10px] uppercase tracking-widest mb-0.5">
+                                    Session
+                                </div>
+                                <div className="text-text font-mono text-lg tracking-wider">
+                                    {formatTime(elapsedTime)}
+                                </div>
                             </div>
-                            <div className="text-text font-mono text-lg tracking-wider">
-                                {formatTime(elapsedTime)}
-                            </div>
+                            <button
+                                className="group relative bg-transparent border border-red/40 text-red-light text-xs font-medium tracking-wider uppercase px-4 py-1.5 cursor-pointer transition-all duration-300 hover:border-red hover:text-text hover:shadow-[0_0_20px_rgba(170,32,32,0.15)]"
+                                onClick={handleStop}
+                            >
+                                <span className="relative z-10">Stop</span>
+                                <div className="absolute inset-0 bg-red/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            </button>
                         </div>
                     )}
                 </div>
 
                 {!sessionStart && (
                     <button
-                        className="group relative bg-transparent border border-red/40 text-red-light text-sm font-medium tracking-wider uppercase px-6 py-2.5 cursor-pointer transition-all duration-300 hover:border-red hover:text-text hover:shadow-[0_0_20px_rgba(170,32,32,0.15)]"
+                        className="group relative bg-transparent border border-red/40 text-red-light text-sm font-medium tracking-wider uppercase px-6 py-2.5 cursor-pointer transition-all duration-300 hover:border-red hover:text-text hover:shadow-[0_0_20px_rgba(170,32,32,0.15)] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:shadow-none"
                         onClick={handleStart}
+                        disabled={pending}
                     >
-                        <span className="relative z-10">Start Session</span>
+                        <span className="relative z-10 flex items-center gap-2">
+                            {pending && (
+                                <span className="inline-block w-3.5 h-3.5 border border-current border-t-transparent rounded-full animate-spin" />
+                            )}
+                            {pending ? 'Starting' : 'Start Session'}
+                        </span>
                         <div className="absolute inset-0 bg-red/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </button>
                 )}
