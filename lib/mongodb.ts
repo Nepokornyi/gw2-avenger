@@ -20,16 +20,38 @@ const globalCache = globalThis.__mongoCache ?? { client: null, promise: null }
 
 globalThis.__mongoCache = globalCache
 
-export async function getMongoClient() {
-    if (globalCache.client) return globalCache.client
-
-    if (!globalCache.promise) {
-        const client = new MongoClient(mongoUri)
-        globalCache.promise = client.connect()
-    }
-
+async function connectClient() {
+    const client = new MongoClient(mongoUri)
+    globalCache.promise = client.connect()
     globalCache.client = await globalCache.promise
     return globalCache.client
+}
+
+function resetCache() {
+    globalCache.client = null
+    globalCache.promise = null
+}
+
+export async function getMongoClient() {
+    if (globalCache.client) {
+        try {
+            await globalCache.client.db().command({ ping: 1 })
+            return globalCache.client
+        } catch {
+            resetCache()
+        }
+    }
+
+    if (globalCache.promise) {
+        try {
+            globalCache.client = await globalCache.promise
+            return globalCache.client
+        } catch {
+            resetCache()
+        }
+    }
+
+    return connectClient()
 }
 
 export async function getDatabase(name = process.env.MONGODB_DB_NAME) {
