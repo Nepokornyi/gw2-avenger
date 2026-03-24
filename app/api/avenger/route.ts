@@ -14,7 +14,7 @@ export async function POST(req: Request) {
         )
 
         if (!res.ok)
-            Response.json({
+            return Response.json({
                 status: 401,
                 message: 'Unauthorized. Invalid API Key.',
             })
