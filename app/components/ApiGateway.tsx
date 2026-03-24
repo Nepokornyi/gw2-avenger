@@ -19,10 +19,11 @@ export const ApiGateway = () => {
 
             if (!res.ok) throw new Error('Invalid key')
 
-            setApiKey(keyInput)
-
             const data = await res.json()
-            console.log('Valid key data: ', data)
+
+            if (!data.valid) throw new Error('Key not valid')
+
+            setApiKey(keyInput)
         } catch (err) {
             console.error('Request failed', err)
         }
