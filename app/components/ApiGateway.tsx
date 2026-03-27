@@ -1,36 +1,24 @@
 'use client'
 
-import { useApiKey } from '@/context/ApiKeyContext'
+import { useAuth } from '@/context/AuthContext'
 import { useState } from 'react'
 
 export const ApiGateway = () => {
-    const { apiKey, setApiKey, ready } = useApiKey()
+    const { user, login, ready } = useAuth()
     const [keyInput, setKeyInput] = useState('')
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
 
-    if (!ready || apiKey) return null
+    if (!ready || user?.hasApiKey) return null
 
     const handleSave = async () => {
         setError(null)
         setLoading(true)
 
         try {
-            const res = await fetch('/api/verify', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ apiKey: keyInput }),
-            })
-
-            if (!res.ok) throw new Error('Invalid key')
-
-            const data = await res.json()
-
-            if (!data.valid) throw new Error('Key not valid')
-
-            setApiKey(keyInput)
+            await login(keyInput)
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Verification failed')
+            setError(err instanceof Error ? err.message : 'Login failed')
         } finally {
             setLoading(false)
         }

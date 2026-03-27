@@ -2,13 +2,13 @@
 import { useEffect, useState } from 'react'
 import { z } from 'zod'
 import { RealmAvengerResponseSchema } from '../api/avenger/schema'
-import { useApiKey } from '@/context/ApiKeyContext'
+import { useAuth } from '@/context/AuthContext'
 import { getSession, saveSession, clearSession } from '@/lib/local-storage'
 
 type RealmAvengerStats = z.infer<typeof RealmAvengerResponseSchema>
 
 export const RealmAvengerTracking = () => {
-    const { apiKey, ready } = useApiKey()
+    const { user, ready } = useAuth()
     const [killStats, setKillStats] = useState<RealmAvengerStats | null>(null)
 
     const [sessionStart, setSessionStart] = useState<number | null>(null)
@@ -28,14 +28,12 @@ export const RealmAvengerTracking = () => {
     }, [sessionStart])
 
     useEffect(() => {
-        if (!pollingActive || !apiKey) return
+        if (!pollingActive) return
 
         const interval = setInterval(async () => {
             try {
                 const res = await fetch('/api/avenger', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ apiKey: apiKey }),
                 })
 
                 if (!res.ok) throw new Error('Polling failed')
@@ -53,10 +51,10 @@ export const RealmAvengerTracking = () => {
         }, 180000)
 
         return () => clearInterval(interval)
-    }, [pollingActive, apiKey])
+    }, [pollingActive])
 
     useEffect(() => {
-        if (!apiKey) return
+        if (!user?.hasApiKey) return
 
         const stored = getSession()
         if (!stored) return
@@ -70,17 +68,14 @@ export const RealmAvengerTracking = () => {
             done: false,
         })
         setPollingActive(true)
-    }, [apiKey])
+    }, [user?.hasApiKey])
 
     const handleStart = async () => {
-        if (!apiKey) return
         setPending(true)
 
         try {
             const res = await fetch('/api/avenger', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ apiKey: apiKey }),
             })
 
             if (!res.ok) throw new Error('API unavailable')
@@ -117,7 +112,7 @@ export const RealmAvengerTracking = () => {
         clearSession()
     }
 
-    if (!ready || !apiKey) return null
+    if (!ready || !user?.hasApiKey) return null
 
     const formatTime = (seconds: number) => {
         const h = Math.floor(seconds / 3600)
