@@ -5,12 +5,17 @@ const KEYS = {
     session: 'gw2_session',
 } as const
 
+type AchievementProgress = {
+    id: number
+    current: number
+    max: number
+    done: boolean
+}
+
 export type StoredSession = {
     startedAt: number
-    initialKills: number
-    currentKills: number
-    maxKills: number
-    achievementId: number
+    initialProgress: Record<number, number>
+    currentProgress: AchievementProgress[]
 }
 
 // --- API Key ---
