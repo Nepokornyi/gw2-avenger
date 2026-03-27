@@ -1,7 +1,3 @@
-'use client'
-
-import React from 'react'
-
 export const Header = () => {
     return (
         <header className="w-full border-b border-border bg-bg-surface/50 backdrop-blur-sm animate-fade-in-slow">

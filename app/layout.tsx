@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Niramit } from 'next/font/google'
+import { AuthProvider } from '@/context/AuthContext'
 import './globals.css'
 
 const niramitFont = Niramit({
@@ -21,7 +22,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`${niramitFont.variable} antialiased`}>
-                {children}
+                <AuthProvider>{children}</AuthProvider>
             </body>
         </html>
     )
