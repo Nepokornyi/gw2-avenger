@@ -16,10 +16,17 @@
     --red-light: #cc3333;
 
     --text: #e8e4d9;
-    --text-muted: #6b6780;
-    --text-dim: #3e3a50;
+    --text-muted: #908c9e;
+    --text-dim: #5e5a70;
 
     --green: #5a9e4b;
+    --green-dim: #3d6b33;
+
+    --blue: #4a8ec2;
+    --blue-dim: #33628a;
+
+    --amber: #c49a3c;
+    --amber-dim: #8a6d2a;
 }
 
 @theme inline {
@@ -42,6 +49,13 @@
     --color-text-dim: var(--text-dim);
 
     --color-green: var(--green);
+    --color-green-dim: var(--green-dim);
+
+    --color-blue: var(--blue);
+    --color-blue-dim: var(--blue-dim);
+
+    --color-amber: var(--amber);
+    --color-amber-dim: var(--amber-dim);
 
     --font-sans: var(--font-niramit-sans);
 }
