@@ -1,13 +1,22 @@
-import { RealmAvengerRequestSchema, RealmAvengerResponseSchema } from './schema'
+import { RealmAvengerResponseSchema } from './schema'
 import { gw2Fetch, Gw2ApiError } from '@/lib/gw2-api'
+import { getUserFromRequest } from '@/lib/auth'
 
-export async function POST(req: Request) {
+export async function POST() {
     try {
-        const body = RealmAvengerRequestSchema.parse(await req.json())
+        const user = await getUserFromRequest()
+
+        if (!user || !user.apiKey) {
+            return Response.json(
+                { message: 'Not authenticated or missing API key' },
+                { status: 401 },
+            )
+        }
+
         const avenger = await gw2Fetch(
-            body.apiKey,
+            user.apiKey as string,
             '/v2/account/achievements?id=283',
-            RealmAvengerResponseSchema
+            RealmAvengerResponseSchema,
         )
 
         return Response.json({ avenger })
@@ -15,11 +24,11 @@ export async function POST(req: Request) {
         if (err instanceof Gw2ApiError) {
             return Response.json(
                 { message: err.message },
-                { status: err.status }
+                { status: err.status },
             )
         }
 
         console.error('GW2 Verification failed: ', err)
-        return Response.json({ status: 400 })
+        return Response.json({ message: 'Request failed' }, { status: 400 })
     }
 }
