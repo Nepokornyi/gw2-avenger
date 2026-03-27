@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb'
+import { Db, MongoClient } from 'mongodb'
 
 const uri = process.env.MONGODB_URI
 
@@ -61,4 +61,10 @@ export async function getDatabase(name = process.env.MONGODB_DB_NAME) {
 
     // Fallback to default DB from connection string if no explicit DB name is set.
     return client.db()
+}
+
+export async function createUserIndexes(db: Db) {
+    await db
+        .collection('users')
+        .createIndex({ accountId: 1 }, { unique: true })
 }
