@@ -8,7 +8,7 @@ import { getSession, saveSession, clearSession } from '@/lib/local-storage'
 type RealmAvengerStats = z.infer<typeof RealmAvengerResponseSchema>
 
 export const RealmAvengerTracking = () => {
-    const { user, ready } = useAuth()
+    const { user, clearApiKey, ready } = useAuth()
     const [killStats, setKillStats] = useState<RealmAvengerStats | null>(null)
 
     const [sessionStart, setSessionStart] = useState<number | null>(null)
@@ -36,7 +36,14 @@ export const RealmAvengerTracking = () => {
                     method: 'POST',
                 })
 
-                if (!res.ok) throw new Error('Polling failed')
+                if (!res.ok) {
+                    const data = await res.json()
+                    if (data.error === 'key_revoked') {
+                        clearApiKey()
+                        setPollingActive(false)
+                    }
+                    throw new Error(data.message ?? 'Polling failed')
+                }
 
                 const { avenger } = await res.json()
                 setKillStats(avenger)
@@ -51,7 +58,7 @@ export const RealmAvengerTracking = () => {
         }, 180000)
 
         return () => clearInterval(interval)
-    }, [pollingActive])
+    }, [pollingActive, clearApiKey])
 
     useEffect(() => {
         if (!user?.hasApiKey) return
@@ -78,7 +85,13 @@ export const RealmAvengerTracking = () => {
                 method: 'POST',
             })
 
-            if (!res.ok) throw new Error('API unavailable')
+            if (!res.ok) {
+                const data = await res.json()
+                if (data.error === 'key_revoked') {
+                    clearApiKey()
+                }
+                throw new Error(data.message ?? 'API unavailable')
+            }
 
             const { avenger } = await res.json()
 

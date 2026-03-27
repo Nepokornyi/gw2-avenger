@@ -1,6 +1,7 @@
 import { SignJWT, jwtVerify } from 'jose'
 import { cookies } from 'next/headers'
 import { getDatabase } from './mongodb'
+import { Gw2ApiError } from './gw2-api'
 
 const COOKIE_NAME = 'gw2-session'
 
@@ -48,4 +49,41 @@ export async function getUserFromRequest() {
     } catch {
         return null
     }
+}
+
+const GW2_API_HEALTH = 'https://api.guildwars2.com/v2.json'
+
+export async function handleGw2ApiError(
+    accountId: string,
+    error: Gw2ApiError,
+): Promise<{ error: string; message: string; status: number }> {
+    if (error.status === 401) {
+        const db = await getDatabase()
+        await db.collection('users').updateOne(
+            { accountId },
+            { $set: { apiKey: null, updatedAt: new Date() } },
+        )
+        return {
+            error: 'key_revoked',
+            message:
+                'API key is no longer valid — please add a new one.',
+            status: 401,
+        }
+    }
+
+    if (error.status >= 500) {
+        try {
+            const res = await fetch(GW2_API_HEALTH)
+            if (!res.ok) throw new Error()
+            return { error: 'gw2_error', message: error.message, status: error.status }
+        } catch {
+            return {
+                error: 'gw2_down',
+                message: 'GW2 API is unavailable.',
+                status: 503,
+            }
+        }
+    }
+
+    return { error: 'gw2_error', message: error.message, status: error.status }
 }

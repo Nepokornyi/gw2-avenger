@@ -20,6 +20,7 @@ type User = {
 type AuthContextValue = {
     user: User | null
     login: (apiKey: string) => Promise<void>
+    clearApiKey: () => void
     ready: boolean
 }
 
@@ -59,6 +60,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return () => window.removeEventListener('storage', handleStorage)
     }, [fetchUser])
 
+    const clearApiKey = useCallback(() => {
+        setUser((prev) =>
+            prev ? { ...prev, hasApiKey: false } : null,
+        )
+    }, [])
+
     const login = async (apiKey: string) => {
         const res = await fetch('/api/auth/login', {
             method: 'POST',
@@ -82,7 +89,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ user, login, ready }}>
+        <AuthContext.Provider value={{ user, login, clearApiKey, ready }}>
             {children}
         </AuthContext.Provider>
     )
