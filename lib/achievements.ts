@@ -117,6 +117,31 @@ export function getAchievementsByGroup(group: AchievementGroup): Achievement[] {
     return WVW_ACHIEVEMENTS.filter((a) => a.group === group)
 }
 
+export function getActiveAchievementIds(progress: AchievementProgress[]): number[] {
+    return WVW_ACHIEVEMENTS.map((a) => {
+        if (a.type === 'single') return a.id
+
+        for (const tier of a.tiers) {
+            const p = progress.find((pr) => pr.id === tier.id)
+            if (!p || !p.done) return tier.id
+        }
+        return a.tiers[a.tiers.length - 1].id
+    })
+}
+
+export function getAchievementNameById(id: number): { name: string; group: AchievementGroup } | null {
+    for (const a of WVW_ACHIEVEMENTS) {
+        if (a.type === 'single' && a.id === id) {
+            return { name: a.name, group: a.group }
+        }
+        if (a.type === 'chain') {
+            const tier = a.tiers.find((t) => t.id === id)
+            if (tier) return { name: tier.name, group: a.group }
+        }
+    }
+    return null
+}
+
 export type AchievementProgress = {
     id: number
     current: number
