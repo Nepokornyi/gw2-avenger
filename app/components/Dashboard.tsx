@@ -1,10 +1,12 @@
 'use client'
 
+import { useEffect } from 'react'
 import {
     GROUP_CONFIG,
     getAchievementsByGroup,
     type AchievementGroup,
 } from '@/lib/achievements'
+import { getSession } from '@/lib/local-storage'
 import { useAchievements } from '@/hooks/useAchievements'
 import { useSession } from '@/hooks/useSession'
 import { AchievementCard } from './AchievementCard'
@@ -14,10 +16,20 @@ import { SectionHeading } from '@/components/SectionHeading'
 const GROUPS: AchievementGroup[] = ['combat', 'captures', 'defenses', 'supply']
 
 export const Dashboard = () => {
-    const { progress, setProgress, loading, fetchAchievements } =
+    const { progress, setProgress, loading, setLoading, fetchAchievements } =
         useAchievements()
 
     const session = useSession({ fetchAchievements, setProgress })
+
+    // Fetch on mount only if no active session
+    useEffect(() => {
+        const stored = getSession()
+        if (!stored?.startedAt) {
+            fetchAchievements().finally(() => setLoading(false))
+        } else {
+            setLoading(false)
+        }
+    }, [fetchAchievements, setLoading])
 
     if (loading) {
         return (

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { type AchievementProgress } from '@/lib/achievements'
 
@@ -30,9 +30,5 @@ export function useAchievements() {
         }
     }, [clearApiKey])
 
-    useEffect(() => {
-        fetchAchievements().finally(() => setLoading(false))
-    }, [fetchAchievements])
-
-    return { progress, setProgress, loading, fetchAchievements }
+    return { progress, setProgress, loading, setLoading, fetchAchievements }
 }
