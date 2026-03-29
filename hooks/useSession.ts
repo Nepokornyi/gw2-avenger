@@ -6,7 +6,7 @@ import {
     saveSession,
     clearSession,
 } from '@/lib/local-storage'
-import { type AchievementProgress } from '@/lib/achievements'
+import { type AchievementProgress, type AchievementDelta, getActiveAchievementIds } from '@/lib/achievements'
 
 type UseSessionOptions = {
     fetchAchievements: () => Promise<AchievementProgress[] | undefined>
@@ -78,10 +78,13 @@ export function useSession({ fetchAchievements, setProgress }: UseSessionOptions
             const now = Date.now()
             const startMap = new Map<number, number>()
             const initialProgress: Record<number, number> = {}
+            const activeIds = getActiveAchievementIds(achievements)
 
             for (const a of achievements) {
-                startMap.set(a.id, a.current)
-                initialProgress[a.id] = a.current
+                if (activeIds.includes(a.id)) {
+                    startMap.set(a.id, a.current)
+                    initialProgress[a.id] = a.current
+                }
             }
 
             setSessionStart(startMap)
