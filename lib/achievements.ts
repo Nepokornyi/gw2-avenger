@@ -124,6 +124,12 @@ export type AchievementProgress = {
     done: boolean
 }
 
+export type AchievementDelta = {
+    achievementId: number
+    startValue: number
+    endValue: number
+}
+
 export type ResolvedAchievement = {
     name: string
     current: number

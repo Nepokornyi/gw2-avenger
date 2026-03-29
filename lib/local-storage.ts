@@ -1,16 +1,11 @@
 'use client'
 
+import { type AchievementProgress } from './achievements'
+
 const KEYS = {
     apiKey: 'gw2_api_key',
     session: 'gw2_session',
 } as const
-
-type AchievementProgress = {
-    id: number
-    current: number
-    max: number
-    done: boolean
-}
 
 export type StoredSession = {
     startedAt: number
