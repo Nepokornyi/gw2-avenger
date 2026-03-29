@@ -103,13 +103,44 @@ export function useSession({ fetchAchievements, setProgress }: UseSessionOptions
         }
     }, [fetchAchievements])
 
-    const handleStop = useCallback(() => {
+    const handleStop = useCallback(async () => {
+        if (sessionStart && sessionStartTime) {
+            // Fetch latest data from API before saving
+            const latestProgress = await fetchAchievements() ?? []
+
+            // Build achievements with deltas
+            const achievements: AchievementDelta[] = []
+            for (const [id, startValue] of sessionStart) {
+                const current = latestProgress.find((p) => p.id === id)
+                const endValue = current?.current ?? startValue
+                if (endValue > startValue) {
+                    achievements.push({ achievementId: id, startValue, endValue })
+                }
+            }
+
+            // Save to DB only if there are positive deltas
+            if (achievements.length > 0) {
+                try {
+                    await fetch('/api/sessions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            startedAt: sessionStartTime,
+                            achievements,
+                        }),
+                    })
+                } catch (err) {
+                    console.error('Failed to save session:', err)
+                }
+            }
+        }
+
         setPollingActive(false)
         setSessionStart(null)
         setSessionStartTime(null)
         setElapsedTime(0)
         clearSession()
-    }, [])
+    }, [sessionStart, sessionStartTime, fetchAchievements])
 
     return {
         sessionStart,
