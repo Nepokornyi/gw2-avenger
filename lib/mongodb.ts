@@ -68,3 +68,9 @@ export async function createUserIndexes(db: Db) {
         .collection('users')
         .createIndex({ accountId: 1 }, { unique: true })
 }
+
+export async function createSessionIndexes(db: Db) {
+    await db
+        .collection('sessions')
+        .createIndex({ accountId: 1, startedAt: -1 })
+}
