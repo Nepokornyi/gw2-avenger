@@ -7,7 +7,11 @@ import { Input } from '@/components/Input'
 import { Card } from '@/components/Card'
 
 const FEATURES = [
-    { label: 'Player Kill Tracking', color: 'text-red-light', dotColor: 'bg-red-light' },
+    {
+        label: 'Player Kill Tracking',
+        color: 'text-red-light',
+        dotColor: 'bg-red-light',
+    },
     { label: 'Objective Captures', color: 'text-green', dotColor: 'bg-green' },
     { label: 'Objective Defenses', color: 'text-blue', dotColor: 'bg-blue' },
     { label: 'Supply & Logistics', color: 'text-amber', dotColor: 'bg-amber' },
@@ -41,7 +45,10 @@ export const LoginScreen = () => {
     return (
         <div
             className="min-h-screen flex items-center justify-center px-6"
-            style={{ background: 'radial-gradient(ellipse 50% 35% at 50% 25%, rgba(200, 162, 82, 0.05), transparent)' }}
+            style={{
+                background:
+                    'radial-gradient(ellipse 50% 35% at 50% 25%, rgba(200, 162, 82, 0.05), transparent)',
+            }}
         >
             <div className="w-full max-w-lg animate-fade-in relative">
                 {/* Title */}
@@ -78,8 +85,14 @@ export const LoginScreen = () => {
                             key={f.label}
                             className="flex items-center gap-2.5 px-3 py-2.5 border border-border bg-bg-surface/50"
                         >
-                            <div className={`w-1.5 h-1.5 ${f.dotColor} rotate-45 shrink-0`} />
-                            <span className={`text-sm ${f.color} tracking-wide`}>{f.label}</span>
+                            <div
+                                className={`w-1.5 h-1.5 ${f.dotColor} rotate-45 shrink-0`}
+                            />
+                            <span
+                                className={`text-sm ${f.color} tracking-wide leading-loose`}
+                            >
+                                {f.label}
+                            </span>
                         </div>
                     ))}
                 </div>
@@ -128,10 +141,11 @@ export const LoginScreen = () => {
                                 className="text-gold-dim hover:text-gold transition-colors duration-300 underline underline-offset-2"
                             >
                                 account.arena.net
-                            </a>
-                            {' '}with{' '}
+                            </a>{' '}
+                            with{' '}
                             <span className="text-text-muted">account</span> and{' '}
-                            <span className="text-text-muted">progression</span> permissions enabled.
+                            <span className="text-text-muted">progression</span>{' '}
+                            permissions enabled.
                         </p>
                     </div>
                 </Card>
