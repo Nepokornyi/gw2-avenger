@@ -1,7 +1,13 @@
 import type { Metadata } from 'next'
-import { Niramit } from 'next/font/google'
+import { Cinzel, Niramit } from 'next/font/google'
 import { AuthProvider } from '@/context/AuthContext'
 import './globals.css'
+
+const cinzelFont = Cinzel({
+    variable: '--font-cinzel',
+    subsets: ['latin'],
+    weight: ['400', '500', '600', '700'],
+})
 
 const niramitFont = Niramit({
     variable: '--font-niramit-sans',
@@ -21,7 +27,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className={`${niramitFont.variable} antialiased`}>
+            <body className={`${niramitFont.variable} ${cinzelFont.variable} antialiased`}>
                 <AuthProvider>{children}</AuthProvider>
             </body>
         </html>

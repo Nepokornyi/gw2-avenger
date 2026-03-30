@@ -117,7 +117,9 @@ export function getAchievementsByGroup(group: AchievementGroup): Achievement[] {
     return WVW_ACHIEVEMENTS.filter((a) => a.group === group)
 }
 
-export function getActiveAchievementIds(progress: AchievementProgress[]): number[] {
+export function getActiveAchievementIds(
+    progress: AchievementProgress[],
+): number[] {
     return WVW_ACHIEVEMENTS.map((a) => {
         if (a.type === 'single') return a.id
 
@@ -129,7 +131,9 @@ export function getActiveAchievementIds(progress: AchievementProgress[]): number
     })
 }
 
-export function getAchievementNameById(id: number): { name: string; group: AchievementGroup } | null {
+export function getAchievementNameById(
+    id: number,
+): { name: string; group: AchievementGroup } | null {
     for (const a of WVW_ACHIEVEMENTS) {
         if (a.type === 'single' && a.id === id) {
             return { name: a.name, group: a.group }
@@ -160,7 +164,6 @@ export type ResolvedAchievement = {
     current: number
     max: number
     done: boolean
-    tierLabel: string | null
     activeId: number
 }
 
@@ -175,7 +178,6 @@ export function resolveAchievement(
             current: p?.current ?? 0,
             max: p?.max ?? 1,
             done: p?.done ?? false,
-            tierLabel: null,
             activeId: achievement.id,
         }
     }
@@ -188,8 +190,6 @@ export function resolveAchievement(
                 current: p?.current ?? 0,
                 max: p?.max ?? 1,
                 done: false,
-                tierLabel:
-                    tier.name.replace(achievement.name, '').trim() || 'I',
                 activeId: tier.id,
             }
         }
@@ -202,37 +202,40 @@ export function resolveAchievement(
         current: lastProgress?.max ?? 0,
         max: lastProgress?.max ?? 1,
         done: true,
-        tierLabel: 'Complete',
         activeId: lastTier.id,
     }
 }
 
 export const GROUP_COLORS: Record<
     AchievementGroup,
-    { barFrom: string; barTo: string; accent: string; accentDim: string }
+    { barFrom: string; barTo: string; accent: string; accentDim: string; glowClass: string }
 > = {
     combat: {
         barFrom: 'from-red/80',
         barTo: 'to-red-light',
         accent: 'text-red-light',
         accentDim: 'text-red',
+        glowClass: 'glow-combat',
     },
     captures: {
         barFrom: 'from-green-dim',
         barTo: 'to-green',
         accent: 'text-green',
         accentDim: 'text-green-dim',
+        glowClass: 'glow-captures',
     },
     defenses: {
         barFrom: 'from-blue-dim',
         barTo: 'to-blue',
         accent: 'text-blue',
         accentDim: 'text-blue-dim',
+        glowClass: 'glow-defenses',
     },
     supply: {
         barFrom: 'from-amber-dim',
         barTo: 'to-amber',
         accent: 'text-amber',
         accentDim: 'text-amber-dim',
+        glowClass: 'glow-supply',
     },
 }

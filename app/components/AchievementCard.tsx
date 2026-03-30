@@ -31,21 +31,17 @@ export const AchievementCard = ({
     const accentVia = colors.barTo.replace('to-', 'via-') + ' opacity-50'
 
     return (
-        <Card accentColor={accentVia}>
+        <Card
+            accentColor={accentVia}
+            className={resolved.done ? colors.glowClass : ''}
+        >
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
                 <div>
                     <div className="flex items-center gap-2.5 mb-1">
-                        <h3 className="text-text font-medium tracking-wide text-base">
+                        <h3 className="font-display text-text font-medium tracking-wide text-base">
                             {resolved.name}
                         </h3>
-                        {resolved.tierLabel && (
-                            <span
-                                className={`text-xs uppercase tracking-widest ${colors.accentDim}`}
-                            >
-                                {resolved.tierLabel}
-                            </span>
-                        )}
                     </div>
                     <p className="text-text-dim text-sm uppercase tracking-widest">
                         {achievement.description}
@@ -75,11 +71,19 @@ export const AchievementCard = ({
                         {resolved.max.toLocaleString()}
                     </span>
                 </div>
-                <div className="h-1.5 bg-bg-base overflow-hidden">
+                <div className="h-2 bg-bg-base overflow-hidden">
                     <div
-                        className={`h-full bg-gradient-to-r ${colors.barFrom} ${colors.barTo} animate-progress-fill transition-all duration-1000`}
+                        className={`h-full bg-gradient-to-r ${colors.barFrom} ${colors.barTo} animate-progress-fill transition-all duration-1000 relative overflow-hidden`}
                         style={{ width: `${pct}%` }}
-                    />
+                    >
+                        {/* Shimmer sweep */}
+                        <div
+                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+                            style={{
+                                animation: 'shimmer 3s ease-in-out infinite',
+                            }}
+                        />
+                    </div>
                 </div>
             </div>
 

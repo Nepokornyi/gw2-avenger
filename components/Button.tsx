@@ -10,7 +10,7 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
 const variantStyles: Record<Variant, { base: string; hover: string; glow: string }> = {
     primary: {
         base: 'border-gold-dim text-gold',
-        hover: 'hover:border-gold hover:text-gold-light hover:shadow-[0_0_15px_var(--gold-glow)]',
+        hover: 'hover:border-gold hover:text-gold-light hover:shadow-[0_0_20px_var(--gold-glow)]',
         glow: 'bg-gold/5',
     },
     danger: {
@@ -32,7 +32,7 @@ export const Button = ({
 
     return (
         <button
-            className={`group relative bg-transparent border font-medium tracking-wider uppercase cursor-pointer transition-all duration-300 ${styles.base} ${styles.hover} disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:shadow-none ${className}`}
+            className={`group relative bg-transparent border font-display font-medium tracking-[0.15em] uppercase cursor-pointer transition-all duration-300 ${styles.base} ${styles.hover} disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:shadow-none ${className}`}
             disabled={disabled || loading}
             {...props}
         >

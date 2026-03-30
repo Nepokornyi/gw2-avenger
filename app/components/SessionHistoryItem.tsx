@@ -49,7 +49,7 @@ export const SessionHistoryItem = ({ session }: Props) => {
                             <div className="text-text text-base font-medium">
                                 {formatDate(session.startedAt)}
                             </div>
-                            <div className="text-text-dim text-sm">
+                            <div className="text-text-dim text-sm tracking-wide">
                                 {formatDuration(session.startedAt, session.endedAt)}
                             </div>
                         </div>
@@ -59,7 +59,7 @@ export const SessionHistoryItem = ({ session }: Props) => {
                         <div className="text-gold text-base font-semibold tabular-nums">
                             +{totalDelta.toLocaleString()}
                         </div>
-                        <span className={`text-text-dim text-sm transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}>
+                        <span className={`text-text-dim text-xs transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}>
                             ▾
                         </span>
                     </div>
@@ -71,7 +71,7 @@ export const SessionHistoryItem = ({ session }: Props) => {
             </button>
 
             {expanded && (
-                <div className="mt-4 pt-4 border-t border-border flex flex-col gap-2 animate-fade-in">
+                <div className="mt-4 pt-4 border-t border-border flex flex-col gap-2.5 animate-fade-in">
                     {session.achievements.map((a) => {
                         const info = getAchievementNameById(a.achievementId)
                         const name = info?.name ?? `Achievement #${a.achievementId}`

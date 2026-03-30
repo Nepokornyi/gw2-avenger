@@ -26,15 +26,20 @@ export const SessionBar = ({
     onStop,
 }: Props) => {
     return (
-        <Card>
+        <Card className={isActive ? 'animate-ember-pulse' : ''}>
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-5">
-                    <h2 className="text-text font-medium tracking-wide uppercase text-base">
-                        {isActive ? 'Session Active' : 'Session'}
-                    </h2>
+                    <div className="flex items-center gap-3">
+                        {isActive && (
+                            <div className="w-2 h-2 bg-gold rounded-full animate-pulse" />
+                        )}
+                        <h2 className="font-display text-text font-medium tracking-[0.15em] uppercase text-base">
+                            {isActive ? 'Session Active' : 'Session'}
+                        </h2>
+                    </div>
 
                     {isActive && (
-                        <div className="text-text font-mono text-2xl tracking-wider animate-fade-in">
+                        <div className="text-gold-light font-mono text-2xl tracking-wider animate-fade-in">
                             {formatTime(elapsedTime)}
                         </div>
                     )}

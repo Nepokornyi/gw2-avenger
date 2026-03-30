@@ -29,7 +29,7 @@ export default function HistoryPage() {
     return (
         <div className="font-sans min-h-screen">
             <Header />
-            <main className="max-w-5xl mx-auto px-8 py-12">
+            <main className="max-w-6xl mx-auto px-8 py-12">
                 <SectionHeading color="text-gold">
                     Session History
                 </SectionHeading>
